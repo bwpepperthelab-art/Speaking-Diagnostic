@@ -105,6 +105,11 @@ fieldset.can legend{font-weight:700;padding:0 6px}
 .desc{font-size:.95rem;background:var(--panel-2);border-radius:8px;padding:10px 12px}
 table.crit tr.hit td{background:var(--amber-soft)}
 table.crit .lvl-badge{font-size:.82rem}
+.gamecards{display:grid;gap:8px}
+.gamecard{display:grid;gap:4px;text-align:left;font-weight:400;background:var(--night);padding:12px 14px;line-height:1.45}
+.gamecard b{font-size:1rem}
+.gamecard span{font-size:.9rem;color:var(--text)}
+.gamecard .ex{color:var(--muted);font-style:italic}
 .gap{font-size:.88rem}
 .suggest{font-size:.88rem;color:var(--teal)}
 @media (max-width:560px){table.grounds{font-size:.84rem} table.grounds .hide-s{display:none}}
@@ -216,8 +221,8 @@ audio{width:100%;max-width:420px;height:36px}
     <ul class="plan">
       <li><span class="k">1 Read aloud</span><span>Read a short story. The computer shows which words it couldn't understand.</span></li>
       <li><span class="k">2 One minute</span><span>Talk about a topic for 60 seconds. Then listen back and count your “um”s and long pauses.</span></li>
-      <li><span class="k">3 Role-play</span><span>Answer three people in three real situations.</span></li>
-      <li><span class="k">4 Picture</span><span>Choose one of three busy photos and describe it for 50 seconds.</span></li>
+      <li><span class="k">3 Role-play</span><span>Answer five people in five real situations, from a hotel complaint to disagreeing with a grade.</span></li>
+      <li><span class="k">4 Picture</span><span>Choose one of three busy photos and describe it for up to 2½ minutes.</span></li>
       <li><span class="k">My results</span><span>Rate yourself, see what the computer measured, reflect, make your game plan, and download your results for e-campus.</span></li>
     </ul>
     <p class="notice warn"><b>One way only.</b> When you move to the next step, the step before it closes. You can't go back to redo a task or change an answer, so finish each step before you press <b>Next</b>.</p>
@@ -248,7 +253,7 @@ audio{width:100%;max-width:420px;height:36px}
 
 <section class="tabp" data-tab="t3" data-label="3 Role-play">
   <div><p class="eyebrow">Task 3 · Interaction</p><h2>Role-play replies</h2></div>
-  <p class="muted">Press <b>Hear it</b>, then answer the person out loud. You have 25 seconds for each reply. Speak to them as you would in real life.</p>
+  <p class="muted">Press <b>Hear it</b>, then answer the person out loud. You have 45 seconds for each reply. Some situations need careful, diplomatic language, so think for a moment before you press Start. Speak to them as you would in real life.</p>
   <div id="situs" style="display:grid;gap:16px"></div>
   <div class="panel" id="res3" hidden></div>
 </section>
@@ -256,7 +261,7 @@ audio{width:100%;max-width:420px;height:36px}
 <section class="tabp" data-tab="t4" data-label="4 Picture">
   <div><p class="eyebrow">Task 4 · Vocabulary</p><h2>Describe the picture</h2></div>
   <div class="panel">
-    <p>Choose one of the three photos and open it. Imagine you are describing it to a friend on the phone who can't see it. Say <b>where</b> things are and <b>what people are doing</b>. Look at it for a moment first, then press <b>Start speaking</b>. You have <b>50 seconds</b>.</p>
+    <p>Choose one of the three photos and open it. Imagine you are describing it to a friend on the phone who can't see it. Say <b>where</b> things are and <b>what people are doing</b>. Look at it for a moment first, then press <b>Start speaking</b>. You have up to <b>2½ minutes</b>.</p>
     <div id="sceneBox"></div>
     <div id="rec4"></div>
   </div>
@@ -337,17 +342,29 @@ const TOPICS = [
   "Something new you learned this year, and how you learned it."
 ];
 const SITUS = [
-  {who:"Barista", place:"At a café", line:"Here's your iced Americano! Enjoy!",
-   task:"You ordered a hot latte. Politely say it's the wrong drink and ask for the right one.",
-   model:"Oh, sorry, I think there's been a mix-up. I actually ordered a hot latte. Could you change it for me, please?"},
+  {who:"Hotel receptionist", place:"Hotel front desk", line:"Good morning! Is everything all right with your room?",
+   task:"Your room is next to a construction site and you hardly slept. Complain firmly but politely, and ask for a quieter room or a partial refund.",
+   model:"Actually, I'm afraid not. My room overlooks the construction site, and the noise started so early that I barely slept. I completely understand it's not your fault, but I was hoping you could move me to a quieter room. If that isn't possible, would you consider a partial refund for last night?",
+   phrases:["I'm afraid not.","I completely understand it's not your fault, but…","Would you consider…?"]},
   {who:"Professor", place:"Office hours", line:"Come in, come in. What can I do for you today?",
-   task:"Your essay is due tomorrow, but you were sick this week. Ask for a two-day extension and suggest a new date.",
-   model:"Hi, Professor. I'm sorry to bother you. I was sick this week, so I was wondering if I could have a two-day extension. Could I submit it on Friday?"},
-  {who:"Hotel receptionist", place:"On the phone", line:"Good afternoon, Seaside Hotel. How may I help you?",
-   task:"Change your booking from Friday to Saturday (two nights), and ask if breakfast is included.",
-   model:"Hello, I'd like to change my booking, please. It's for two nights from Friday, but could I move it to Saturday instead? Also, is breakfast included?"}
+   task:"Your essay is due tomorrow, but you've been sick all week. Ask for an extension, explain briefly, and offer a specific new deadline.",
+   model:"Thank you for seeing me, Professor. I'm sorry to bring this up so late, but I've been ill for most of the week and haven't been able to finish my essay to the standard I'd like. Would it be possible to have a two-day extension? I could submit it by Friday at noon, if that works for you.",
+   phrases:["I'm sorry to bring this up so late, but…","to the standard I'd like","…if that works for you."]},
+  {who:"Teammate", place:"Group project", line:"Hey! So, how's the project going? Everything on track?",
+   task:"Your teammate hasn't started their part, and you present in three days. Raise the problem diplomatically, without blaming them, and agree on a plan.",
+   model:"Mostly, yes, but I'm a little concerned about the timeline. I noticed the data section hasn't been started yet, and we present on Friday. Is everything okay on your end? Maybe we could split it, so you take the charts and I'll draft the text, and then we check in tomorrow evening?",
+   phrases:["I'm a little concerned about…","Is everything okay on your end?","Maybe we could…"]},
+  {who:"Café manager", place:"Part-time job, on the phone", line:"Hi, it's Mr. Lee from the café. Could you cover the Saturday morning shift this week?",
+   task:"You can't work on Saturday because of an important family event. Decline politely, give a reason, and offer an alternative so your manager isn't left without help.",
+   model:"Thanks for thinking of me, Mr. Lee. Unfortunately, I have a family commitment on Saturday that I really can't move, so I won't be able to make it this time. I could do Sunday morning instead, or I could ask Minji if she's free. Would either of those help?",
+   phrases:["Thanks for thinking of me.","I won't be able to make it this time.","Would either of those help?"]},
+  {who:"Professor", place:"After class", line:"So, you wanted to talk about your midterm grade?",
+   task:"You think one of your answers was marked unfairly. Disagree diplomatically, explain your reasoning, and ask the professor to reconsider.",
+   model:"Yes, thank you. I don't want to take up too much of your time, but I was a bit surprised by the mark for question four. I think my answer did cover the two main points, just in a different order. I could be missing something, of course, but would you be willing to take another look at it?",
+   phrases:["I was a bit surprised by…","I could be missing something, of course, but…","Would you be willing to take another look?"]}
 ];
-const POLITE = /\b(please|sorry|excuse me|could you|would you|could i|would it be possible|i was wondering|i'?d like|thank you|thanks|do you mind|would you mind|if possible|i'?m afraid)\b/gi;
+const NSIT = SITUS.length;
+const POLITE = /\b(please|sorry|excuse me|could you|would you|could i|would it be possible|i was wondering|i'?d like|thank you|thanks|do you mind|would you mind|if possible|i'?m afraid|unfortunately|i'?d appreciate|would you consider|would you be willing)\b/gi;
 // the three photos students can choose from, and what the computer listens for in each
 const PICS = [
  {id:"mall", title:"A busy shopping mall", alt:"A busy two-level shopping mall with a Christmas tree, escalator, fountain, café and many shoppers",
@@ -390,7 +407,7 @@ const REFL = [
   ["Which task made you most nervous, and why?","refl3"]
 ];
 const PLAN = [
-  ["Why this skill? Use at least one number from Step 2.","plan0"],
+  ["Why did you choose these skills? Use at least one number from Step 2.","plan0"],
   ["A real situation in English I want to handle better (this can become my game's scenario)","plan1"],
   ["My game idea in one sentence: where am I, who do I talk to, and what do I need to do?","plan2"]
 ];
@@ -398,9 +415,9 @@ const RATES = [["pron","Pronunciation"],["flu","Fluency"],["int","Interaction"],
 const RSTEPS = ["Rate yourself","What the computer measured","Reflection","Game plan","Submit"];
 
 /* ======================= state ======================= */
-const KEY = "speak-diag-v2";
-function blank(){ return {name:"",sid:"",t1:null,t2:null,t3:[null,null,null],t3checks:[[0,0,0],[0,0,0],[0,0,0]],t4:null,topic:null,pic:null,
-  tally:{fillers:0,pauses:0,restarts:0},rates:{},refl:{},plan:{},game:"",skill:"",step:0,rstep:0}; }
+const KEY = "speak-diag-v3";
+function blank(){ return {name:"",sid:"",t1:null,t2:null,t3:[null,null,null,null,null],t3checks:[[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]],t4:null,topic:null,pic:null,
+  tally:{fillers:0,pauses:0,restarts:0},rates:{},refl:{},plan:{},game:"",gameOwn:"",skills:[],step:0,rstep:0}; }
 let S = blank();
 try{ const raw = localStorage.getItem(KEY); if (raw) S = Object.assign(blank(), JSON.parse(raw)); }catch(e){}
 let saveT; function save(now){ clearTimeout(saveT); const go=()=>{ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }; now?go():saveT=setTimeout(go,250); }
@@ -555,7 +572,7 @@ function renderT2(){
 let talkReady=false;
 
 /* ======================= Task 3: role-play ======================= */
-function roleResult(){ return SITUS.map((s,i)=>{ const t=S.t3[i]; if(!t) return null; const pol=(t.text.match(POLITE)||[]).map(x=>x.toLowerCase()); return {words:words(t.text).length, polite:[...new Set(pol)], checks:S.t3checks[i]}; }); }
+function roleResult(){ return SITUS.map((s,i)=>{ const t=S.t3[i]; if(!t) return null; const pol=[...(t.text.match(POLITE)||[]),...(t.text.match(new RegExp(SOFTEN.source,"gi"))||[])].map(x=>x.toLowerCase()); return {words:words(t.text).length, polite:[...new Set(pol)], checks:S.t3checks[i]}; }); }
 function renderT3(){
   const box=$("#situs"); box.innerHTML="";
   SITUS.forEach((s,i)=>{
@@ -566,19 +583,22 @@ function renderT3(){
       el("div",{class:"other"}, el("button",{type:"button",onclick:()=>speakLine(s.line)},"Hear it"), el("span",{class:"muted",text:`${s.who}:`}), el("q",{text:s.line})));
     const mount = el("div"); card.append(mount); box.append(card);
     if (!prevDone){ mount.append(el("p",{class:"muted",text:"Finish the situation before this one first."})); return; }
-    recorder(mount,{max:25,id:"t3-"+i,label:"Start my reply",done:S.t3[i],onDone:take=>{ if(!accept(take)){ mount.append(el("p",{class:"notice warn",text:"The computer caught almost nothing. Try once more."})); setTimeout(renderT3,1800); return; } S.t3[i]=take; save(true); renderT3(); refresh(); }});
+    recorder(mount,{max:45,id:"t3-"+i,label:"Start my reply",done:S.t3[i],onDone:take=>{ if(!accept(take)){ mount.append(el("p",{class:"notice warn",text:"The computer caught almost nothing. Try once more."})); setTimeout(renderT3,1800); return; } S.t3[i]=take; save(true); renderT3(); refresh(); }});
     if (S.t3[i]){
       const r = roleResult()[i];
       const checks = el("div",{class:"checks"});
       ["I was polite","I said clearly what I needed","I gave all the details"].forEach((lab,k)=>{ const cb=el("input",{type:"checkbox",id:`c${i}${k}`}); cb.checked=!!S.t3checks[i][k];
-        cb.onchange=()=>{ S.t3checks[i][k]=cb.checked?1:0; save(); }; checks.append(el("label",{for:`c${i}${k}`},cb,lab)); });
-      card.append(el("p",{class:"muted",style:"font-size:.9rem"},"Polite phrases the computer heard: ", r.polite.length? el("b",{text:r.polite.join(", ")}) : el("b",{text:"none"})),
-        el("div",{class:"model"}, el("b",{text:"One natural reply"}), s.model), el("p",{style:"font-size:.9rem"},"Compare, then tick what's true for your reply:"), checks);
+        cb.onchange=()=>{ S.t3checks[i][k]=cb.checked?1:0; save(); renderRes3(); }; checks.append(el("label",{for:`c${i}${k}`},cb,lab)); });
+      card.append(el("p",{class:"muted",style:"font-size:.9rem"},"Polite and softening phrases the computer heard: ", r.polite.length? el("b",{text:r.polite.join(", ")}) : el("b",{text:"none"})),
+        el("div",{class:"model"}, el("b",{text:"One natural reply"}), s.model), el("p",{class:"muted",style:"font-size:.88rem"},"Expressions to notice: ", el("b",{text:s.phrases.join("  ·  ")})), el("p",{style:"font-size:.9rem"},"Compare, then tick what's true for your reply:"), checks);
     }
   });
+  renderRes3();
+}
+function renderRes3(){
   const res=$("#res3"); const all=roleResult(); res.hidden=!all.every(Boolean); res.innerHTML="";
   if (!res.hidden){ const pol = all.reduce((n,r)=>n+r.polite.length,0); const ticks = all.reduce((n,r)=>n+r.checks.reduce((a,b)=>a+b,0),0);
-    res.append(el("h3",{text:"Your three replies"}), el("div",{class:"cards"}, mc(pol,"polite phrases used"), mc(ticks+"/9","self-check ticks"), mc(Math.round(all.reduce((n,r)=>n+r.words,0)/3),"words per reply"))); }
+    res.append(el("h3",{text:`Your ${NSIT} replies`}), el("div",{class:"cards"}, mc(pol,"polite phrases used"), mc(`${ticks}/${NSIT*3}`,"self-check ticks"), mc(Math.round(all.reduce((n,r)=>n+r.words,0)/NSIT),"words per reply"))); }
 }
 
 /* ======================= Task 4: picture ======================= */
@@ -603,7 +623,7 @@ function renderT4(){
   if (!S.t4){ sb.append(el("p",{class:"muted",text:pc?"You can still switch to another photo until you press Start speaking.":"Choose one photo. Click it to open it."}), picChooser()); }
   if (!pc){ mount.innerHTML=""; $("#res4").hidden=true; return; }
   sb.append(el("h3",{style:"margin-top:6px",text:pc.title}), photo(pc));
-  recorder(mount,{max:50,id:"t4",done:S.t4,onDone:take=>{ if(!accept(take)){ mount.append(el("p",{class:"notice warn",text:"The computer caught almost nothing. Try once more."})); setTimeout(renderT4,1800); return; } S.t4=take; save(true); renderT4(); refresh(); }});
+  recorder(mount,{max:150,id:"t4",done:S.t4,onDone:take=>{ if(!accept(take)){ mount.append(el("p",{class:"notice warn",text:"The computer caught almost nothing. Try once more."})); setTimeout(renderT4,1800); return; } S.t4=take; save(true); renderT4(); refresh(); }});
   const res=$("#res4"); const r=picResult(); res.hidden=!r; res.innerHTML=""; if(!r) return;
   res.append(el("h3",{text:"Your description"}),
     el("div",{class:"cards"}, mc(`${r.used.length}/${curPic().vocab.length}`,"things you named"), mc(r.place.length,"location phrases"), mc(r.uniq,"different words")),
@@ -644,7 +664,7 @@ const CAN = { // student-friendly paraphrases of the CEFR descriptors, used for 
     B2:"I have a good range of words for general topics and can vary them to avoid repeating myself, though gaps still slow me down.",
     C1:"I have a broad range of words, including precise and less common ones, and can easily get around any gaps."}
 };
-const SOFTEN = /\b(i was wondering|would it be possible|i'?m afraid|would you mind|do you think you could|i'?d (really )?appreciate|if it'?s not too much trouble|sorry to bother|if possible|is there any way|would that be okay)\b/i;
+const SOFTEN = /\b(i was wondering|i wonder if|would it be possible|i'?m afraid|would you mind|do you think you could|i'?d (really )?appreciate|i'?d be grateful|if it'?s not too much trouble|sorry to bother|if possible|is there any way|would that be okay|would you consider|would you be willing|would you be open to|with all due respect|i (completely |totally )?understand|i hate to|i'?m a (little|bit) concerned|i was hoping|i could be missing|if that works for you|i'?m not sure (if|whether))\b/i;
 function syllables(w){ w=w.toLowerCase().replace(/[^a-z]/g,""); if(!w) return 0; if(w.length<=3) return 1;
   w=w.replace(/(?:[^laeiouy]es|ed|[^laeiouy]e)$/,"").replace(/^y/,""); const m=w.match(/[aeiouy]{1,2}/g); return Math.max(1,m?m.length:1); }
 
@@ -674,27 +694,27 @@ function computerScores(){
       source:"Speech-rate cut-offs: halfway between the average A2 and B1 speakers (73 and 135 syllables/min) and between B1 and B2 (135 and 172) in Tavakoli, Nakatsuhara & Hunter (2020). B2 and C1 speakers spoke at the same speed in that study, so C1 depends on pauses. “Um”s don't change your level: they didn't separate the levels in that study either. Pause and restart limits: your teacher's mapping of the CEFR descriptors."}; }
   // Interaction
   const d3=r3.filter(Boolean);
-  if (d3.length===3){ const P=d3.filter(r=>r.polite.length).length, C=d3.filter(r=>r.checks[1]).length, D=d3.filter(r=>r.checks[2]).length;
-    const H=SITUS.filter((_,i)=>S.t3[i]&&SOFTEN.test(S.t3[i].text)).length; const avg=Math.round(d3.reduce((n,r)=>n+r.words,0)/3);
-    const crit=[["C1","all 3 replies polite, clear and complete, 15+ words on average, and softening phrases in at least 2 replies", P===3&&C===3&&D===3&&avg>=15&&H>=2],
-                ["B2","all 3 replies polite and clear, at least 2 complete, 12+ words on average", P===3&&C===3&&D>=2&&avg>=12],
-                ["B1","at least 2 replies polite and clear", P>=2&&C>=2],["A2","fewer than 2 replies polite and clear",true]];
+  if (d3.length===NSIT){ const P=d3.filter(r=>r.polite.length).length, C=d3.filter(r=>r.checks[1]).length, D=d3.filter(r=>r.checks[2]).length;
+    const H=SITUS.filter((_,i)=>S.t3[i]&&SOFTEN.test(S.t3[i].text)).length; const avg=Math.round(d3.reduce((n,r)=>n+r.words,0)/NSIT);
+    const crit=[["C1","all 5 replies polite and clear, at least 4 complete, 20+ words on average, and softening phrases in at least 3 replies", P===5&&C===5&&D>=4&&avg>=20&&H>=3],
+                ["B2","at least 4 replies polite and clear, at least 3 complete, 15+ words on average", P>=4&&C>=4&&D>=3&&avg>=15],
+                ["B1","at least 3 replies polite and clear", P>=3&&C>=3],["A2","fewer than 3 replies polite and clear",true]];
     out.int={level:crit.find(c=>c[2])[0], task:"Task 3 · Role-play", crit,
-      rows:[["Replies with a polite phrase (computer)",`${P}/3`,"B2: 3/3",P===3?"good":P<2?"low":""],
-            ["Replies that said clearly what you need (your tick)",`${C}/3`,"B2: 3/3",C===3?"good":C<2?"low":""],
-            ["Replies with all the details (your tick)",`${D}/3`,"C1: 3/3",D===3?"good":""],
-            ["Replies with a softening phrase (computer)",`${H}/3`,"C1: 2+",H>=2?"good":""],
-            ["Average words per reply",String(avg),"B2: 12+",avg>=12?"good":avg<8?"low":""]],
-      source:"Softening phrases are the C1 evidence because the Flexibility scale expects C1 speakers to adjust how they say things to the situation and the listener, and to show degrees of confidence or hesitation. Examples: “I was wondering…”, “Would it be possible…”, “I'm afraid…”, “Sorry to bother you…”. Cut-offs: your teacher's mapping of the CEFR descriptors."}; }
+      rows:[["Replies with a polite or softening phrase (computer)",`${P}/5`,"B2: 4+ · C1: 5",P>=4?"good":P<3?"low":""],
+            ["Replies that said clearly what you need (your tick)",`${C}/5`,"B2: 4+ · C1: 5",C>=4?"good":C<3?"low":""],
+            ["Replies with all the details (your tick)",`${D}/5`,"B2: 3+ · C1: 4+",D>=3?"good":""],
+            ["Replies with a softening phrase (computer)",`${H}/5`,"C1: 3+",H>=3?"good":""],
+            ["Average words per reply",String(avg),"B2: 15+ · C1: 20+",avg>=15?"good":avg<10?"low":""]],
+      source:"Softening phrases are the C1 evidence because the Flexibility scale expects C1 speakers to adjust how they say things to the situation and the listener, and to show degrees of confidence or hesitation. The Sociolinguistic appropriateness scale also expects C1 speakers to “frame critical remarks or express strong disagreement diplomatically”, which situations 3 and 5 ask for. Examples: “I was wondering…”, “I'm a little concerned about…”, “I could be missing something, but…”, “Would you consider…?”. Cut-offs: your teacher's mapping of the CEFR descriptors."}; }
   // Vocabulary
   if (r4){ const t=S.t4.text.toLowerCase(); const PC=curPic(); const prec=PC.precise.filter(([,re])=>re.test(t)).map(x=>x[0]); const N=r4.used.length, L=r4.place.length, p=prec.length;
-    const crit=[["C1","14+ things named, 6+ precise words, 4+ location phrases", N>=14&&p>=6&&L>=4],
-                ["B2","10+ things named, 3+ precise words, 2+ location phrases", N>=10&&p>=3&&L>=2],
-                ["B1","6+ things named", N>=6],["A2","fewer than 6 things named",true]];
+    const crit=[["C1","16+ things named, 7+ precise words, 5+ location phrases", N>=16&&p>=7&&L>=5],
+                ["B2","12+ things named, 4+ precise words, 3+ location phrases", N>=12&&p>=4&&L>=3],
+                ["B1","8+ things named", N>=8],["A2","fewer than 8 things named",true]];
     out.voc={level:crit.find(c=>c[2])[0], task:"Task 4 · Picture", crit,
-      rows:[["Photo",PC.title,"—",""],["Things you named",`${N}/${PC.vocab.length}`,"B2: 10+",N>=10?"good":N<6?"low":""],
-            [`Precise words (${PC.precise.slice(0,3).map(x=>x[0]).join(", ")}…)`,String(p),"B2: 3+",p>=3?"good":p<1?"low":""],
-            ["Location phrases (next to, behind…)",String(L),"B2: 2+",L>=2?"good":"low"],
+      rows:[["Photo",PC.title,"—",""],["Things you named",`${N}/${PC.vocab.length}`,"B2: 12+ · C1: 16+",N>=12?"good":N<8?"low":""],
+            [`Precise words (${PC.precise.slice(0,3).map(x=>x[0]).join(", ")}…)`,String(p),"B2: 4+ · C1: 7+",p>=4?"good":p<2?"low":""],
+            ["Location phrases (next to, behind…)",String(L),"B2: 3+ · C1: 5+",L>=3?"good":"low"],
             ["Different words",String(r4.uniq),"info only",""]],
       source:"Cut-offs: your teacher's mapping of the CEFR descriptors. Each photo has its own list of 22 things and 12 precise words, so the three photos are scored the same way.",
       extra:{used:r4.used, missed:r4.missed, prec}}; }
@@ -735,15 +755,31 @@ function textQs(box, list, store){ box.querySelectorAll(".dyn").forEach(x=>x.rem
   list.forEach(([q,id],i)=>{ const ta=el("textarea",{id}); ta.value=store[id]||""; ta.oninput=()=>{ store[id]=ta.value; save(); renderRPager(); };
     box.append(el("label",{class:"f dyn",for:id},`${i+1}. ${q}`,ta)); }); }
 function renderRefl(){ textQs($("#reflBox"), REFL, S.refl); }
+const GAMES=[
+  ["escape","Voice Escape Room: talk your way out of a locked situation",
+   "You are stuck somewhere, like a locked room, a broken elevator or an airport with no passport. Each challenge only opens when you say the right thing in English: answer a guard, persuade a character, or solve a spoken puzzle. The goal is to get out before time runs out.",
+   "Example: you're locked in a museum after closing time, and you must persuade the night guard to let you out."],
+  ["path","Choose Your Path: what you say changes the story",
+   "A branching story. A character speaks, you answer out loud, and what you say decides the next scene. Clear, polite, well-chosen language leads to a better scene; a weak or rude reply makes things harder. There are several possible endings.",
+   "Example: your hotel has lost your booking, and your replies decide whether you end up in a suite or sleeping at the airport."],
+  ["own","My own idea",
+   "Any other kind of speaking game, as long as the player has to speak in English to move forward or win. Describe it in the box that appears.",""]];
+function gameLabel(){ if(S.game==="own") return "My own idea: "+((S.gameOwn||"").trim()||"-"); const g=GAMES.find(x=>x[0]===S.game); return g?g[1].split(":")[0]:"-"; }
+function skillsLabel(){ return (S.skills||[]).map(k=>RATES.find(r=>r[0]===k)[1]).join(", ")||"-"; }
 function renderPlan(){ const box=$("#planBox"); box.querySelectorAll(".dyn").forEach(x=>x.remove());
-  const sug=weakestSkill(); const C=computerScores();
-  const sk=el("div",{class:"f dyn"}, el("span",{text:"The skill my game will train"}));
-  const rad=el("div",{class:"radios"}); RATES.forEach(([k,l])=>rad.append(el("button",{type:"button","aria-pressed":String(S.skill===k),onclick:()=>{ S.skill=k; save(); renderPlan(); renderRPager(); }},l+(C[k]?` (${C[k].level})`:""))));
-  sk.append(rad); if(sug) sk.append(el("p",{class:"suggest",text:`The computer's lowest estimate was for ${RATES.find(r=>r[0]===sug)[1]}. That's a good choice, but you can pick another skill if you explain why.`}));
+  const sug=weakestSkill(); const C=computerScores(); S.skills=S.skills||[];
+  const sk=el("div",{class:"f dyn"}, el("span",{text:"The skills my game will train (choose one or more)"}));
+  const rad=el("div",{class:"radios"}); RATES.forEach(([k,l])=>rad.append(el("button",{type:"button","aria-pressed":String(S.skills.includes(k)),onclick:()=>{ S.skills=S.skills.includes(k)?S.skills.filter(x=>x!==k):[...S.skills,k]; save(); renderPlan(); renderRPager(); }},(S.skills.includes(k)?"✓ ":"")+l+(C[k]?` (${C[k].level})`:""))));
+  sk.append(rad); if(sug) sk.append(el("p",{class:"suggest",text:`The computer's lowest estimate was for ${RATES.find(r=>r[0]===sug)[1]}. That's a good place to start, but you can choose other skills too if you explain why.`}));
   box.append(sk);
   const gw=el("div",{class:"f dyn"}, el("span",{text:"The kind of speaking game I want to build"})); const gr=el("div",{class:"radios"});
-  [["escape","Voice Escape Room: talk your way out of a locked situation"],["path","Choose Your Path: what you say changes the story"]].forEach(([v,l])=>gr.append(el("button",{type:"button","aria-pressed":String(S.game===v),onclick:()=>{ S.game=v; save(); renderPlan(); renderRPager(); }},l)));
-  gw.append(gr); box.append(gw);
+  gr.className="gamecards";
+  GAMES.forEach(([v,l,d,ex])=>gr.append(el("button",{type:"button",class:"gamecard","aria-pressed":String(S.game===v),onclick:()=>{ S.game=v; save(); renderPlan(); renderRPager(); }},
+    el("b",{text:(S.game===v?"✓ ":"")+l}), el("span",{text:d}), ex?el("span",{class:"ex",text:ex}):null)));
+  gw.append(gr, el("p",{class:"muted",style:"font-size:.86rem;margin:0",text:"Your game will be published as a web page, so it should check what the player says with speech recognition and phrase rules, not by asking an AI while the game runs."}));
+  if (S.game==="own"){ const ta=el("textarea",{id:"gameOwn",placeholder:"What kind of game is it? How does the player use speaking to win or move forward?"}); ta.value=S.gameOwn||"";
+    ta.oninput=()=>{ S.gameOwn=ta.value; save(); renderRPager(); }; gw.append(el("label",{class:"f",for:"gameOwn"},"Describe your own kind of game",ta)); }
+  box.append(gw);
   PLAN.forEach(([q,id],i)=>{ const ta=el("textarea",{id}); ta.value=S.plan[id]||""; ta.oninput=()=>{ S.plan[id]=ta.value; save(); renderRPager(); };
     box.append(el("label",{class:"f dyn",for:id},`${i+1}. ${q}`,ta)); }); }
 
@@ -751,7 +787,7 @@ function renderPlan(){ const box=$("#planBox"); box.querySelectorAll(".dyn").for
 function rstepMissing(i){
   if (i===0) return RATES.every(([k])=>S.rates[k]) ? null : "Choose a level for all four skills first.";
   if (i===2) return REFL.every(([,id])=>(S.refl[id]||"").trim()) ? null : "Answer all four questions first.";
-  if (i===3) return (S.skill && S.game && PLAN.every(([,id])=>(S.plan[id]||"").trim())) ? null : "Choose a skill and a game type, and answer all three questions first.";
+  if (i===3) return ((S.skills||[]).length && S.game && (S.game!=="own"||(S.gameOwn||"").trim()) && PLAN.every(([,id])=>(S.plan[id]||"").trim())) ? null : (S.game==="own"&&!(S.gameOwn||"").trim() ? "Describe your own kind of game first." : "Choose at least one skill and a game type, and answer all three questions first.");
   return null; }
 const RSTEP_WARN = ["You can't change your ratings after this.","","You can't change your reflection after this.","You can't change your game plan after this."];
 function renderResults(){
@@ -784,7 +820,7 @@ function asText(){
   const C=computerScores();
   L.push("","CEFR LEVELS (computer estimate / my level)"); RATES.forEach(([k,l])=>L.push(`  ${l}: computer ${C[k]?C[k].level:"-"} / me ${S.rates[k]||"-"}`));
   L.push("","REFLECTION"); REFL.forEach(([q,id])=>L.push(`  ${q}`,`    ${(S.refl[id]||"").trim()||"-"}`));
-  L.push("","GAME PLAN", `  Skill to train: ${(RATES.find(r=>r[0]===S.skill)||["","-"])[1]}`, `  Game type: ${S.game==="escape"?"Voice Escape Room":S.game==="path"?"Choose Your Path":"-"}`);
+  L.push("","GAME PLAN", `  Skills to train: ${skillsLabel()}`, `  Game type: ${gameLabel()}`);
   PLAN.forEach(([q,id])=>L.push(`  ${q}`,`    ${(S.plan[id]||"").trim()||"-"}`));
   return L.join("\n"); }
 
@@ -836,7 +872,7 @@ function makePdf(){
   head("Reflection");
   REFL.forEach(([q,id],i)=>{ para(`${i+1}. ${q}`,{size:9.5,bold:true}); para((S.refl[id]||"").trim()||"-",{indent:4,after:2}); });
   head("Game plan");
-  para("Skill to train: "+((RATES.find(r=>r[0]===S.skill)||["","-"])[1])+"   |   Game type: "+(S.game==="escape"?"Voice Escape Room":S.game==="path"?"Choose Your Path":"-"),{bold:true,size:10,after:2});
+  para("Skills to train: "+skillsLabel(),{bold:true,size:10}); para("Game type: "+gameLabel(),{bold:true,size:10,after:2});
   PLAN.forEach(([q,id],i)=>{ para(`${i+1}. ${q}`,{size:9.5,bold:true}); para((S.plan[id]||"").trim()||"-",{indent:4,after:2}); });
   const n=doc.getNumberOfPages(); for(let i=1;i<=n;i++){ doc.setPage(i); doc.setFont("helvetica","normal"); doc.setFontSize(8); doc.setTextColor(...MUTED); doc.text("Speaking Diagnostic - Day 1",M,PH-8); doc.text(`${i} / ${n}`,PW-M,PH-8,{align:"right"}); }
   return doc.output("blob");
